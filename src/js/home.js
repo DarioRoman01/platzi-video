@@ -1,6 +1,9 @@
 
 (async function load() {
 
+  // API url
+  const BASE_API = 'https://yts.mx/api/v2/';
+
   // document elements
   const $actionContainer = document.querySelector('#action');
   const $dramaContainer = document.getElementById('drama');
@@ -25,8 +28,8 @@
     }
   }
 
-  // event to be executed when the user search for a movie
-  $form.addEventListener('submit', (event) => {
+  // code to be executed when the user search for a movie
+  $form.addEventListener('submit', async (event) => {
     event.preventDefault();
     $home.classList.add('search-active');
     const $loader = document.createElement('img');
@@ -36,8 +39,13 @@
       height: 50,
       width: 50,
     })
-
     $featuringContainer.append($loader);
+
+    const data = new FormData($form);
+    const movie = await getData(`${BASE_API}list_movies.json?limit=1&query_term=${data.get('name')}`);
+    const HTMLString = featuringTemplate(movie.data.movies[0]);
+    $featuringContainer.innerHTML = HTMLString;
+
   })
 
   // event to be executed when the user click on a movie
@@ -82,6 +90,21 @@
     )
   }
 
+  // Generate template when a movie is found
+  function featuringTemplate (movie) {
+    return (
+      `<div class="featuring">
+        <div class="featuring-image">
+          <img src="${movie.medium_cover_image}" width="70" height="100" alt="">
+        </div>
+        <div class="featuring-content">
+          <p class="featuring-title">Pelicula encontrada</p>
+          <p class="featuring-album">${movie.title}</p>
+        </div>
+      </div>`
+    )
+  }
+
   // Generate the template with the data
   function createTemplate(HTMLString) {
     const html = document.implementation.createHTMLDocument();
@@ -101,9 +124,9 @@
   }
 
   // create variables of list of movies based on genres
-  const actionList =  await getData('https://yts.mx/api/v2/list_movies.json?genre=action');
-  const dramaList = await getData('https://yts.mx/api/v2/list_movies.json?genre=drama');
-  const animationList = await getData('https://yts.mx/api/v2/list_movies.json?genre=animation');
+  const actionList =  await getData(`${BASE_API}list_movies.json?genre=action`);
+  const dramaList = await getData(`${BASE_API}list_movies.json?genre=drama`);
+  const animationList = await getData(`${BASE_API}list_movies.json?genre=animation`);
 
   renderMovieList(actionList.data.movies, $actionContainer);
   renderMovieList(dramaList.data.movies, $dramaContainer);
