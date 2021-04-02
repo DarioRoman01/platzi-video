@@ -1,5 +1,7 @@
 # Platzi video
-platzi video is an app inspired by netflix
+a home page for a movies app using movie api to fetch data 
+using vanilla javascript
 
-## Still in process
-for the moment has only the home page 
+## Apis used for this project
+* [yts.mx](https://yts.mx/)
+* [randomuser.me](https://randomuser.me/)
